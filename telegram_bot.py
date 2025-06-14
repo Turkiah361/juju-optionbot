@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 TOKEN = "7922821938:AAGCQ-wQDaWLNYrvGRlNDuefArqt4DMhGA4"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 Welcome to Juju's Option Bot! Send a stock symbol like TSLA or AMD.")
+    await update.message.reply_text("👋 Welcome to Juju's Option Bot! Send me a stock like TSLA or AMD.")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.upper()
