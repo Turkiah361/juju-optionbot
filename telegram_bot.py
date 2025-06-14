@@ -1,28 +1,26 @@
-import os
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# === Define your bot token (use env var from Render) ===
-TOKEN = os.getenv("TELEGRAM_TOKEN")
+TOKEN = "7922821938:AAGCQ-wQDaWLNYrvGRlNDuefArqt4DMhGA4"
 
-# === /start command ===
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 Hi! I'm Juju'sOptionbot. Send me a stock ticker to analyze.")
+    await update.message.reply_text("👋 Welcome to Juju's Option Bot! Send a stock symbol like TSLA or AMD.")
 
-# === message handler ===
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_message = update.message.text.strip().upper()
-    
-    if user_message.isalpha():
-        await update.message.reply_text(f"📊 Generating strategy for {user_message}... (dummy response)")
-        # Here you'd call your actual strategy bot logic
-        await update.message.reply_text(f"✅ Strategy: Call Debit Spread\nConfidence: 85%\nIV Rank: 42\nRSI: 67")
-    else:
-        await update.message.reply_text("⚠️ Please send a valid stock symbol (e.g., AAPL, TSLA, etc.)")
+    text = update.message.text.upper()
 
-# === Main app entry ===
-if __name__ == "__main__":
+    if text == "TSLA":
+        await update.message.reply_text("📊 TSLA Strategy:\n✅ Put Debit Spread\nConfidence: 75%\nRSI: 43\nIVR: 39")
+    elif text == "AMD":
+        await update.message.reply_text("📊 AMD Strategy:\n✅ Call Debit Spread\nConfidence: 85%\nRSI: 64\nIVR: 51")
+    else:
+        await update.message.reply_text(f"⚠️ Sorry, I don't have strategy data for {text} yet.")
+
+def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.run_polling()
+
+if __name__ == "__main__":
+    main()
