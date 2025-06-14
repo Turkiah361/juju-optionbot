@@ -1,36 +1,28 @@
-from flask import Flask, request
-import requests
+import os
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 
-# Your Telegram Bot Token
-TOKEN = "7922821938:AAGCQ-wQDaWLNYrvGRlNDuefArqt4DMhGA4"
-URL = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+# === Define your bot token (use env var from Render) ===
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-app = Flask(__name__)
+# === /start command ===
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("👋 Hi! I'm Juju'sOptionbot. Send me a stock ticker to analyze.")
 
-def respond(chat_id, text):
-    payload = {
-        "chat_id": chat_id,
-        "text": text
-    }
-    requests.post(URL, json=payload)
+# === message handler ===
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_message = update.message.text.strip().upper()
+    
+    if user_message.isalpha():
+        await update.message.reply_text(f"📊 Generating strategy for {user_message}... (dummy response)")
+        # Here you'd call your actual strategy bot logic
+        await update.message.reply_text(f"✅ Strategy: Call Debit Spread\nConfidence: 85%\nIV Rank: 42\nRSI: 67")
+    else:
+        await update.message.reply_text("⚠️ Please send a valid stock symbol (e.g., AAPL, TSLA, etc.)")
 
-@app.route(f"/{TOKEN}", methods=["POST"])
-def telegram_webhook():
-    data = request.get_json()
-    if "message" in data:
-        chat_id = data["message"]["chat"]["id"]
-        user_message = data["message"].get("text", "")
-
-        # Handle different commands
-        if user_message.lower() in ["/start", "hi", "hello"]:
-            respond(chat_id, "Welcome to Juju'sOptionbot 📈! Send a ticker symbol (e.g., AAPL) to get a strategy.")
-        elif user_message.isalpha() and len(user_message) <= 5:
-            # You can add your AI strategy logic here
-            respond(chat_id, f"Running AI analysis for {user_message.upper()}... (this is a placeholder)")
-        else:
-            respond(chat_id, "Sorry, I didn’t understand that. Send a ticker like TSLA or AAPL.")
-
-    return {"ok": True}
-
+# === Main app entry ===
 if __name__ == "__main__":
-    app.run(port=5002)
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.run_polling()
