@@ -1,9 +1,9 @@
-from flask import Flask, request
+from flask import Flask
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 import os
 
-# Use your actual token here if not using .env
+# Replace with your actual token or set it as an environment variable on Render
 TOKEN = os.getenv("BOT_TOKEN", "7922821938:AAGCQ-wQDaWLNYrvGRlNDuefArqt4DMhGA4")
 
 app = Flask(__name__)
